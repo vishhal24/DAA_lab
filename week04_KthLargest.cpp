@@ -1,38 +1,51 @@
-#include<bits/stdc++.h>
+#include <iostream>
+#include <vector>
+#include <cstdlib>
+
 using namespace std;
-int kTh_Largest(const vector<int> vec,int k){
-    priority_queue<int,vector<int>,greater<int>>pq;
-    for(auto it : vec){
-        if(pq.size()<k){
-            pq.push(it);
-        }
-        else if(it > pq.top()){
-            pq.pop();
-            pq.push(it);
+
+int partition(vector<int>& arr, int low, int high) {
+    int pivot = arr[high];
+    int i = low - 1;
+    
+    for (int j = low; j < high; j++) {
+        if (arr[j] >= pivot) {
+            i++;
+            swap(arr[i], arr[j]);
         }
     }
-    return pq.top();
+    swap(arr[i + 1], arr[high]);
+    return i + 1;
 }
-void print(vector<int>vec){
-    for(auto it : vec){
-        cout<<it<<" ";
+
+int quickselect(vector<int>& arr, int low, int high, int k) {
+    if (low <= high) {
+        int pivot_index = low + rand() % (high - low + 1);
+        swap(arr[pivot_index], arr[high]);
+        
+        int pivot_pos = partition(arr, low, high);
+        
+        if (pivot_pos == k) {
+            return arr[pivot_pos];
+        } else if (pivot_pos > k) {
+            return quickselect(arr, low, pivot_pos - 1, k);
+        } else {
+            return quickselect(arr, pivot_pos + 1, high, k);
+        }
     }
-    cout<<endl;
+    return -1;
 }
-int main(){
-  int n;
-  cout<<"Enter Number of element ";
-  cin>>n;
-  vector<int>vec(n);
-  for(int i = 0 ;i < n;i++){
-    cin>>vec[i];
-  }
-  cout<<"Given Array \n";
-  print(vec);
-  int k;
-  cin>>k;
-  int val = kTh_Largest(vec,k);
-  cout<<"K_th Largest Element : "<<val;
-  
-  return 0;
+
+int findKthLargest(vector<int>& arr, int k) {
+    return quickselect(arr, 0, arr.size() - 1, k - 1);
 }
+
+int main() {
+    vector<int> arr = {12, 3, 5, 7, 19, 2, 8};
+    int k = 4;
+    
+    cout << "The " << k << "-th largest element is: " << findKthLargest(arr, k) << endl;
+    
+    return 0;
+}
+
